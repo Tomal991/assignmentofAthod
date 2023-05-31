@@ -1,0 +1,68 @@
+<form action="" [formGroup]="dynamicForm" (ngSubmit)="FormOnSubmit()">
+  <h1>Dynamic Form</h1>
+  <div *ngFor="let control of dynamicFormControls">
+    <label>{{ control.label }}</label>
+    <div [ngSwitch]="control.type">
+      <input
+        *ngSwitchCase="'Text'"
+        type="text"
+        formControlName="{{ control.label }}"
+      />
+      <input
+        *ngSwitchCase="'Numeric'"
+        type="number"
+        formControlName="{{ control.label }}"
+      />
+      <div *ngSwitchCase="'RadioButton'">
+        <div *ngFor="let subItem of control.subItems">
+          <label>
+            <input
+              type="radio"
+              formControlName="{{ control.label }}"
+              [value]="subItem.label"
+            />
+            {{ subItem.label }}
+          </label>
+        </div>
+      </div>
+      <div *ngSwitchCase="'Single Choice'">
+        <select formControlName="{{ control.label }}">
+          <option
+            *ngFor="let subItem of control.subItems"
+            [value]="subItem.label"
+          >
+            {{ subItem.label }}
+          </option>
+        </select>
+      </div>
+    </div>
+    <div
+      *ngIf="
+        dynamicForm.controls[control.label].invalid &&
+        (dynamicForm.controls[control.label].dirty ||
+          dynamicForm.controls[control.label].touched)
+      "
+      class="error"
+    >
+      <div *ngIf="dynamicForm.get(control.label)?.hasError('required')">
+        {{ control.label }} is required
+      </div>
+      <div *ngIf="dynamicForm.get(control.label)?.hasError('maxlength')">
+        Maximum length is {{ control.maxLength }}
+      </div>
+      <div *ngIf="dynamicForm.get(control.label)?.hasError('minlength')">
+        Minimum length is {{ control.minLength }}
+      </div>
+      <div *ngIf="dynamicForm.get(control.label)?.hasError('max')">
+        Maximum value is {{ control.maxValue }}
+      </div>
+      <div *ngIf="dynamicForm.get(control.label)?.hasError('min')">
+        Minimum value is {{ control.minValue }}
+      </div>
+      <div *ngIf="dynamicForm.get(control.label)?.hasError('pattern')">
+        Invalid input
+      </div>
+    </div>
+  </div>
+  <button type="submit">Submit</button>
+</form>
